@@ -1,0 +1,40 @@
+# Source file for LCM-S01602DSF/C LCD display by LUMEX.
+# @author peter.vizi@gmail.com
+
+[options]
+wordswap=yes
+rotate_labels=no
+sort_labels=yes
+generate_pinseq=yes
+sym_width=1400
+pinwidthvertical=400
+pinwidthhorizontal=400
+
+[geda_attr]
+version=20060113 1
+name=LCM-S01602DSF/C
+device=LCM-S01602DSF/C
+refdes=LCD?
+footprint=
+description=
+documentation=
+author=peter.vizi@gmail.com
+dist-license=GPLv3
+use-license=GPLv3
+numslots=0
+
+[pins]
+1		pwr	line	l	Vcc	VDD
+2		pwr	line	l	GND	VSS
+3		io	line	l		Vo
+4		in	line	l		RS
+5		in	line	l		R/\_W\_
+6		in	line	l		E
+7		io	line	l		DB0
+8		io	line	l		DB1
+9		io	line	l		DB2
+10		io	line	l		DB3
+11		io	line	l		DB4
+12		io	line	l		DB5
+13		io	line	l		DB6
+14		io	line	l		DB7

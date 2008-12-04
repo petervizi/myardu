@@ -1,0 +1,29 @@
+# Source file for SHT75 Humidity/Temperature sensor by Sensirion.
+# @author peter.vizi@gmail.com
+
+[options]
+wordswap=yes
+rotate_labels=no
+sort_labels=yes
+generate_pinseq=yes
+sym_width=1400
+pinwidthvertical=400
+pinwidthhorizontal=400
+
+[geda_attr]version=20060113 1
+name=SHT75
+device=SHT75
+refdes=T?
+footprint=
+description=
+documentation=
+author=peter.vizi@gmail.com
+dist-license=GPLv3
+use-license=GPLv3
+numslots=0
+
+[pins]
+1		in	line	r		SCK
+2		pwr	line	r		VDD
+3		pwr	line	r		GND
+4		io	line	r		DATA

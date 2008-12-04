@@ -34,6 +34,13 @@
 #
 # $Id$
 
+TARGET = $(notdir $(CURDIR))
+INSTALL_DIR = /home/pvizi/workspace/arduino
+PORT = /dev/ttyUSB0
+UPLOAD_RATE = 19200
+AVRDUDE_PROGRAMMER = stk500v1
+MCU = atmega168
+F_CPU = 16000000
 
 ############################################################################
 # Below here nothing should be changed...
@@ -41,14 +48,10 @@
 ARDUINO = $(INSTALL_DIR)/hardware/cores/arduino
 AVR_TOOLS_PATH = $(INSTALL_DIR)/hardware/tools/avr/bin
 SRC =  $(ARDUINO)/pins_arduino.c $(ARDUINO)/wiring.c \
-	$(ARDUINO)/wiring_analog.c $(ARDUINO)/wiring_digital.c \
-	$(ARDUINO)/wiring_pulse.c $(ARDUINO)/wiring_serial.c \
-	$(ARDUINO)/wiring_shift.c $(ARDUINO)/WInterrupts.c \
-	$(INSTALL_DIR)/hardware/libraries/Wire/utility/twi.c
-CXXSRC = $(ARDUINO)/HardwareSerial.cpp \
-	$(ARDUINO)/WMath.cpp \
-	$(ARDUINO)/Print.cpp \
-	$(INSTALL_DIR)/hardware/libraries/Wire/Wire.cpp
+$(ARDUINO)/wiring_analog.c $(ARDUINO)/wiring_digital.c \
+$(ARDUINO)/wiring_pulse.c $(ARDUINO)/wiring_serial.c \
+$(ARDUINO)/wiring_shift.c $(ARDUINO)/WInterrupts.c
+CXXSRC = $(ARDUINO)/HardwareSerial.cpp $(ARDUINO)/WMath.cpp
 FORMAT = ihex
 
 
@@ -67,11 +70,8 @@ CDEFS = -DF_CPU=$(F_CPU)
 CXXDEFS = -DF_CPU=$(F_CPU)
 
 # Place -I options here
-CINCS = -I$(ARDUINO) \
-	-I/home/pvizi/gcc-avr/usr/avr/include \
-	-I$(INSTALL_DIR)/hardware/libraries/Wire \
-	-I$(INSTALL_DIR)/hardware/libraries/Wire/utility
-CXXINCS = -I$(ARDUINO) -I$(INSTALL_DIR)/hardware/libraries/Wire
+CINCS = -I$(ARDUINO)
+CXXINCS = -I$(ARDUINO)
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -109,12 +109,11 @@ AVRDUDE_FLAGS = -V -F \
 # SIZE = $(AVR_TOOLS_PATH)/avr-size
 # NM = $(AVR_TOOLS_PATH)/avr-nm
 # AVRDUDE = $(AVR_TOOLS_PATH)/avrdude
-CC = /home/pvizi/gcc-avr/usr/bin/avr-gcc
-CXX = /home/pvizi/gcc-avr/usr/bin/avr-g++
+CC = avr-gcc
+CXX = avr-g++
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 AR  = avr-ar
-AS = /home/pvizi/gcc-avr/usr/avr/bin/as
 SIZE = avr-size
 NM = avr-nm
 AVRDUDE = /home/pvizi/workspace/arduino/build/linux/dist/tools/avrdude
@@ -237,7 +236,7 @@ applet/core.a: $(OBJ)
 
 # Target: clean project.
 clean:
-	$(REMOVE) applet/$(TARGET).cpp applet/$(TARGET).hex applet/$(TARGET).eep applet/$(TARGET).cof applet/$(TARGET).elf \
+	$(REMOVE) applet/$(TARGET).hex applet/$(TARGET).eep applet/$(TARGET).cof applet/$(TARGET).elf \
 	applet/$(TARGET).map applet/$(TARGET).sym applet/$(TARGET).lss applet/core.a \
 	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d) $(CXXSRC:.cpp=.s) $(CXXSRC:.cpp=.d)
 

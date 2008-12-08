@@ -1,23 +1,25 @@
 // -*- mode:c++; -*-
 
-#include <WProgram.h>
-#include <LCD4Bit.h>
+#include <LiquidCrystal.h>
 
-int ledPin = 1;
-LCD4Bit lcd = LCD4Bit(1);
-void setup() {
-    Serial.begin(9600);
-    lcd.init();
-    //LiquidCrystal lcd = LiquidCrystal(10, 11, 12, 6, 7, 8, 9);
-    pinMode(ledPin, OUTPUT);
-    //    lcd.clear();
-    //lcd.print("Hello world!");
-    digitalWrite(ledPin, HIGH);
+// rs, rw, enable, d4, d5, d6, d7
+//LiquidCrystal lcd(10, 11, 12, 2, 3, 4, 5,6, 7, 8, 9);
+LiquidCrystal lcd(10, 11, 12, 6, 7, 8, 9);
+void setup() { 
+    pinMode(13, OUTPUT); 
 }
 
 void loop() {
-    digitalWrite(ledPin, HIGH);
-    delay(500);
-    digitalWrite(ledPin, LOW);
-    delay(500);
+    lcd.print("hello, world!");
+    
+    lcd.setCursor(0, 1);
+    lcd.print("!dlrow ,olleh");
+    while(true) {
+	digitalWrite(13, HIGH);  //light the debug LED
+	delay(1000);
+	digitalWrite(13, LOW);  //light the debug LED
+	delay(1000);
+	lcd.clear();
+	lcd.print("ok");
+    }
 }

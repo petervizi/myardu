@@ -45,10 +45,13 @@ SRC =  $(ARDUINO)/pins_arduino.c $(ARDUINO)/wiring.c \
 	$(ARDUINO)/wiring_pulse.c $(ARDUINO)/wiring_serial.c \
 	$(ARDUINO)/wiring_shift.c $(ARDUINO)/WInterrupts.c \
 	$(INSTALL_DIR)/hardware/libraries/Wire/utility/twi.c
+
 CXXSRC = $(ARDUINO)/HardwareSerial.cpp \
 	$(ARDUINO)/WMath.cpp \
 	$(ARDUINO)/Print.cpp \
-	$(INSTALL_DIR)/hardware/libraries/Wire/Wire.cpp
+	$(INSTALL_DIR)/hardware/libraries/Wire/Wire.cpp \
+	$(INSTALL_DIR)/hardware/libraries/LiquidCrystal/LiquidCrystal.cpp
+#	/tmp/LCD4Bit/LCD4Bit.cpp
 FORMAT = ihex
 
 
@@ -70,7 +73,10 @@ CXXDEFS = -DF_CPU=$(F_CPU)
 CINCS = -I$(ARDUINO) \
 	-I/home/pvizi/gcc-avr/usr/avr/include \
 	-I$(INSTALL_DIR)/hardware/libraries/Wire \
-	-I$(INSTALL_DIR)/hardware/libraries/Wire/utility
+	-I$(INSTALL_DIR)/hardware/libraries/Wire/utility \
+	-I$(INSTALL_DIR)/hardware/libraries/LiquidCrystal
+#	-I/tmp/LCD4Bit
+
 CXXINCS = -I$(ARDUINO) -I$(INSTALL_DIR)/hardware/libraries/Wire
 
 # Compiler flag to set the C Standard level.

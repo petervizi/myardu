@@ -1,0 +1,8 @@
+# -*- mode: makefile; -*-
+
+PLATFORM = arduino
+
+$(call TOSMake_include_platform,avr)
+
+arduino: $(BUILD_DEPS)
+        @:

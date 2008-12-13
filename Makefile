@@ -46,7 +46,7 @@ SRC =  $(ARDUINO)/pins_arduino.c $(ARDUINO)/wiring.c \
 	$(ARDUINO)/wiring_shift.c $(ARDUINO)/WInterrupts.c \
 	$(INSTALL_DIR)/hardware/libraries/Wire/utility/twi.c
 
-CXXSRC = $(ARDUINO)/HardwareSerial.cpp \
+CXXSRC += $(ARDUINO)/HardwareSerial.cpp \
 	$(ARDUINO)/WMath.cpp \
 	$(ARDUINO)/Print.cpp \
 	$(INSTALL_DIR)/hardware/libraries/Wire/Wire.cpp \
@@ -70,7 +70,7 @@ CDEFS = -DF_CPU=$(F_CPU)
 CXXDEFS = -DF_CPU=$(F_CPU)
 
 # Place -I options here
-CINCS = -I$(ARDUINO) \
+CINCS += -I$(ARDUINO) \
 	-I/home/pvizi/gcc-avr/usr/avr/include \
 	-I$(INSTALL_DIR)/hardware/libraries/Wire \
 	-I$(INSTALL_DIR)/hardware/libraries/Wire/utility \
@@ -84,9 +84,10 @@ CXXINCS = -I$(ARDUINO) -I$(INSTALL_DIR)/hardware/libraries/Wire
 # gnu89 - c89 plus GCC extensions
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
-CSTANDARD = -std=gnu99
+#CSTANDARD = -std=gnu99
 CDEBUG = -g$(DEBUG)
-CWARN = -Wall -Wstrict-prototypes
+#CWARN = -Wall -Wstrict-prototypes
+CWARN = -Wall
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 

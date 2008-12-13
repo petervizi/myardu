@@ -1,2 +1,4 @@
 *~
 applet
+*.o
+doc

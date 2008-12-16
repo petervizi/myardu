@@ -9,6 +9,7 @@
 
 #include <inttypes.h>
 #include <math.h>
+#include <stdlib.h>
 #include <wiring.h>
 
 /**
@@ -53,6 +54,10 @@ namespace myardu {
 	 * @return the temperature
 	 */
 	float getTempF();
+
+	float getTempAvg();
+
+	float getTempAvgF();
 	
 	/**
 	 * Get the humidity in %RH.
@@ -61,6 +66,8 @@ namespace myardu {
 	 */
 	float getHum();
 
+	float getHumAvg();
+	
     protected:
 
 	/**
@@ -259,11 +266,24 @@ namespace myardu {
 	 * The last measured temperature.
 	 */
 	uint16_t _temp;
+
+	/**
+	 * An array for storing the data to be averaged.
+	 */
+	uint16_t *_tempAverage;
 	
 	/**
 	 * The lest humidity measurement.
 	 */
 	uint16_t _hum;
+
+	/**
+	 * An array for storing the data to be averaged.
+	 */
+	uint16_t *_humAverage;
+
+	uint8_t _averageLength;
+	uint8_t _averageIndex;
 	
 	/**
 	 * Reset the communication with the sensor.
@@ -351,6 +371,8 @@ namespace myardu {
 	 * @return true if the crc match
 	 */
 	bool checkCRC(uint16_t value, uint8_t recCrc);
+
+	uint16_t average(uint16_t* array, uint8_t length);
     };
 }
 

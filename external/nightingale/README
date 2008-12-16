@@ -1,0 +1,10 @@
+.. -*- mode:rst -*-
+
+===========
+Nightingale
+===========
+
+:authors: Martin Nawrath, nawrath@khm.de
+
+Example for using the watchdog and the sleep mode.
+http://interface.khm.de/index.php/labor/experimente/sleep_watchdog_battery/

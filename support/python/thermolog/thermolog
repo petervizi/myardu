@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+from thermolog import Thermolog
+import sys
+
+if __name__ == "__main__":
+   thm = Thermolog(sys.argv[1:])

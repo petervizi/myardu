@@ -1,4 +1,5 @@
 *~
 applet
 *.o
+*.pyc
 doc

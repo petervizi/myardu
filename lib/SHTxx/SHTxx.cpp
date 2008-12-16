@@ -1,5 +1,4 @@
 #include "SHTxx.h"
-#include "HardwareSerial.h"
 
 const float myardu::SHTxx::d1TableC[5] = {-39.4, -39.6, -39.7, -39.8, -40.1};
 const float myardu::SHTxx::d1TableF[5] = {-38.9, -39.3, -39.5, -39.6, -40.2};
@@ -15,9 +14,12 @@ const float myardu::SHTxx::t1Table[2] = {0.01,    0.01};
 const float myardu::SHTxx::t2Table[2] = {0.00128, 0.00008};
 
 myardu::SHTxx::SHTxx(uint8_t dataPin, uint8_t sckPin):
-    _dataPin(dataPin), _sckPin(sckPin), _vdd(VDD3500mV), _bitres(BITRESHI), _measurementDelay(2000) {
+    _dataPin(dataPin), _sckPin(sckPin), _vdd(VDD5000mV), _bitres(BITRESHI), _measurementDelay(2000), _averageLength(5), _averageIndex(0) {
+    delay(11);
     pinMode(dataPin, OUTPUT);
     pinMode(sckPin, OUTPUT);
+    _tempAverage = (uint16_t*) malloc(_averageLength * sizeof(uint16_t));
+    _humAverage = (uint16_t*) malloc(_averageLength * sizeof(uint16_t));
     reset();
 }
 
@@ -31,9 +33,21 @@ float myardu::SHTxx::getTempF() {
     return convertTempF(_temp);
 }
 
+float myardu::SHTxx::getTempAvg() {
+    return convertTempC(average(_tempAverage, _averageLength));
+}
+
+float myardu::SHTxx::getTempAvgF() {
+    return convertTempF(average(_tempAverage, _averageLength));
+}
+
 float myardu::SHTxx::getHum() {
     measureHum();
     return convertHum(_hum, getTemp());
+}
+
+float myardu::SHTxx::getHumAvg() {
+    return convertHum(average(_humAverage, _averageLength), getTempAvg());
 }
 
 void myardu::SHTxx::reset(void) {
@@ -106,6 +120,10 @@ void myardu::SHTxx::measureTemp() {
 	_lastTempMeasurement = now;
 	if (!measure(&val, &chsum, TEMP)) {
 	    _temp = val;
+	    if (++_averageIndex >= _averageLength) {
+		_averageIndex = 0;
+	    }
+	    _tempAverage[_averageIndex] = _temp;
 	}
     }
 }
@@ -119,6 +137,10 @@ void myardu::SHTxx::measureHum() {
 	_lastHumMeasurement = now;
 	if (!measure(&val, &chsum, HUMI)) {
 	    _hum = val;
+	    if (++_averageIndex >= _averageLength) {
+		_averageIndex = 0;
+	    }
+	    _humAverage[_averageIndex] = _hum;
 	}
     }
 }
@@ -193,4 +215,13 @@ bool myardu::SHTxx::checkCRC(uint16_t value, uint8_t recCrc) {
 	recCrc >>= 1;
     }
     return tmp == crc;
+}
+
+uint16_t myardu::SHTxx::average(uint16_t * array, uint8_t length) {
+    uint8_t i;
+    uint16_t sum;
+    for (i = 0; i < length; i++) {
+	sum += array[i];
+    }
+    return sum/length;
 }

@@ -3,24 +3,43 @@
 import sys, os, time, atexit
 from signal import SIGTERM 
 
+##
+# A generic daemon class.
+#
+# Usage: subclass the Daemon class and override the run() method.
+#
+# From http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+#
+# @author Sander Marechal
+#
 class Daemon:
-	"""
-	A generic daemon class.
-	
-	Usage: subclass the Daemon class and override the run() method
-	"""
+
+	##
+	# Constructor.
+	#
+	# @param self mandatory
+	# @param pidfile the name of the file where the process id of the 
+	# daemon is stored
+	# @param stdin standard input file
+	# @param stdout standard output file
+	# @param stderr standard error file	
+	#
 	def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
 		self.stdin = stdin
 		self.stdout = stdout
 		self.stderr = stderr
 		self.pidfile = pidfile
-	
+
+	##
+	# do the UNIX double-fork magic
+	#
+	# see Stevens' "Advanced Programming in the UNIX Environment"
+	# for details (ISBN 0201563177)
+	# http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+	#
+	# @param self mandatory
+	#
 	def daemonize(self):
-		"""
-		do the UNIX double-fork magic, see Stevens' "Advanced 
-		Programming in the UNIX Environment" for details (ISBN 0201563177)
-		http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
-		"""
 		try: 
 			pid = os.fork() 
 			if pid > 0:
@@ -60,13 +79,20 @@ class Daemon:
 		pid = str(os.getpid())
 		file(self.pidfile,'w+').write("%s\n" % pid)
 	
+	##
+	# Remove the file storing process id
+	#
+	# @param self mandatory
+	#
 	def delpid(self):
 		os.remove(self.pidfile)
 
+	##
+	# Start the daemon
+	#
+	# @param self mandatory
+	#
 	def start(self):
-		"""
-		Start the daemon
-		"""
 		# Check for a pidfile to see if the daemon already runs
 		try:
 			pf = file(self.pidfile,'r')
@@ -84,10 +110,12 @@ class Daemon:
 		self.daemonize()
 		self.run()
 
+	##
+	# Stop the daemon
+	#
+	# @param self mandatory
+	#
 	def stop(self):
-		"""
-		Stop the daemon
-		"""
 		# Get the pid from the pidfile
 		try:
 			pf = file(self.pidfile,'r')
@@ -115,15 +143,21 @@ class Daemon:
 				print str(err)
 				sys.exit(1)
 
+	##
+	# Restart the daemon
+	#
+	# @param self mandatory
+	#
 	def restart(self):
-		"""
-		Restart the daemon
-		"""
 		self.stop()
 		self.start()
 
+	##
+	# You should override this method when you subclass Daemon. It
+	# will be called after the process has been daemonized by
+	# start() or restart().
+	#
+	# @param self mandatory
+	#
 	def run(self):
-		"""
-		You should override this method when you subclass Daemon. It will be called after the process has been
-		daemonized by start() or restart().
-		"""
+		pass

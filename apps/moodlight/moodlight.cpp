@@ -1,43 +1,37 @@
-// -*- mode:c++ -*-
+/**
+ * @file
+ * @brief Moodlight application.
+ *
+ * Using three LEDs this application shows different colours.
+ */
 
-#include <wiring.h>
-
+/**
+ * The pin number of the green LED.
+ */
 int greenPin = 13;
+
+/**
+ * The pin number of the red LED.
+ */
 int redPin = 12;
+
+/**
+ * The pin number of the blue LED.
+ */
 int bluePin = 11;
 
-/*
- * 0: red green state
- * 1: green state
+/**
+ * Set the pins as output.
  */
-int flags = 0;
-
-void toggleGreen() {
-    if (1 && flags) {
-	digitalWrite(greenPin, LOW);
-	flags &= ~1;
-    } else {
-	digitalWrite(greenPin, HIGH);
-	flags |= 1;
-    }
-}
-
-void toggleRed() {
-    if (2 && flags) {
-	digitalWrite(redPin, LOW);
-	flags &= ~2;
-    } else {
-	digitalWrite(redPin, HIGH);
-	flags |= 2;
-    }
-}
-
 void setup() {
     pinMode(greenPin, OUTPUT);
     pinMode(redPin, OUTPUT);
     pinMode(bluePin, OUTPUT);
 }
 
+/**
+ * Change color.
+ */
 void loop() {
     digitalWrite(redPin, HIGH);
     digitalWrite(greenPin, LOW);
@@ -67,5 +61,4 @@ void loop() {
     digitalWrite(greenPin, HIGH);
     digitalWrite(bluePin, HIGH);
     delay(1500);
-
 }

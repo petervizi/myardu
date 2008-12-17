@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from thermolog import Thermolog
+from myardu.thermolog import Thermolog
 import sys
 
 if __name__ == "__main__":

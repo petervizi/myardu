@@ -12,7 +12,34 @@ import serial
 import sys
 import time
 
-from ThermoDaemon import ThermoDaemon
+##
+# Daemon for logging temperature values in a Round Robin Database.
+#
+class ThermoDaemon(Daemon):
+
+    ##
+    # Constructor
+    #
+    # @param self mandatory
+    # @param pidfile where to store the process id of the daemon
+    # @param stdout a file where standard output should go
+    #
+    def __init__(self, pidfile, stdout):
+        Daemon.__init__(self, pidfile, stdout=stdout, stderr=stdout)
+        self._source = serial.Serial('/dev/ttyUSB0', 9600)
+        self._temperature = '/tmp/temperature.rrd'
+
+    ##
+    # Update the Round Robin Database with a new value.
+    #
+    # @param self mandatory
+    #
+    def run(self):
+        while True:
+            values = self._source.readline().strip().split(' ')
+            temp = values[0]
+            print temp, time.time()
+            rrdtool.update(self._temperature, str(time.time()) + ':' + str(temp))
 
 ##
 # Main class for the thermolog application.
@@ -79,31 +106,3 @@ class Thermolog(object):
                           'DEF:temp=/tmp/temperature.rrd:temperature:AVERAGE',
                           'AREA:temp#990033:Temperature')
 
-##
-# Daemon for logging temperature values in a Round Robin Database.
-#
-class ThermoDaemon(Daemon):
-
-    ##
-    # Constructor
-    #
-    # @param self mandatory
-    # @param pidfile where to store the process id of the daemon
-    # @param stdout a file where standard output should go
-    #
-    def __init__(self, pidfile, stdout):
-        Daemon.__init__(self, pidfile, stdout=stdout, stderr=stdout)
-        self._source = serial.Serial('/dev/ttyUSB0', 9600)
-        self._temperature = '/tmp/temperature.rrd'
-
-    ##
-    # Update the Round Robin Database with a new value.
-    #
-    # @param self mandatory
-    #
-    def run(self):
-        while True:
-            values = self._source.readline().strip().split(' ')
-            temp = values[0]
-            print temp, time.time()
-            rrdtool.update(self._temperature, str(time.time()) + ':' + str(temp))

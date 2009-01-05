@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+from myardu.pachube import PachuLog
+import sys
+
+if __name__ == "__main__":
+   thm = PachuLog(sys.argv[1:])

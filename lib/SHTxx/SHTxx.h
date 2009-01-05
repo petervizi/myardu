@@ -11,6 +11,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <wiring.h>
+#ifdef SHT_DEBUG
+#include <HardwareSerial.h>
+#endif
 
 namespace myardu {
     

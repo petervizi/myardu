@@ -15,11 +15,18 @@ const float myardu::SHTxx::t2Table[2] = {0.00128, 0.00008};
 
 myardu::SHTxx::SHTxx(uint8_t dataPin, uint8_t sckPin):
     _dataPin(dataPin), _sckPin(sckPin), _vdd(VDD5000mV), _bitres(BITRESHI), _measurementDelay(2000), _averageLength(5), _averageIndex(0) {
-    delay(11);
+#ifdef SHT_DEBUG
+    Serial.begin(9600);
+    Serial.print("SHT constructor");
+#endif
+    //delay(11);
     pinMode(dataPin, OUTPUT);
     pinMode(sckPin, OUTPUT);
     _tempAverage = (uint16_t*) malloc(_averageLength * sizeof(uint16_t));
     _humAverage = (uint16_t*) malloc(_averageLength * sizeof(uint16_t));
+#ifdef SHT_DEBUG
+    Serial.print("SHT done");
+#endif
     reset();
 }
 
@@ -52,16 +59,25 @@ float myardu::SHTxx::getHumAvg() {
 
 void myardu::SHTxx::reset(void) {
     uint8_t i;
+    #ifdef SHT_DEBUG
+    Serial.println("reseting SHT");
+    #endif
     digitalWrite(_dataPin, HIGH);
     digitalWrite(_sckPin, LOW);
     for (i = 0; i < 9; i++) {
 	digitalWrite(_sckPin, HIGH);
 	digitalWrite(_sckPin, LOW);
     }
+    #ifdef SHT_DEBUG
+    Serial.println("reseting done");
+    #endif
     start();
 }
 
 void myardu::SHTxx::start(void) {
+    #ifdef SHT_DEBUG
+    Serial.println("starting SHT");
+    #endif
     // initial state
     digitalWrite(_dataPin, HIGH);
     digitalWrite(_sckPin, LOW);
@@ -77,6 +93,9 @@ void myardu::SHTxx::start(void) {
     digitalWrite(_dataPin, HIGH);
     asm("nop");
     digitalWrite(_sckPin, LOW);
+    #ifdef SHT_DEBUG
+    Serial.println("start done");
+    #endif
 }
 
 uint8_t myardu::SHTxx::measure(uint16_t *value, uint8_t* checksum, Sensor mode) {
@@ -132,17 +151,33 @@ void myardu::SHTxx::measureHum() {
     unsigned long now = millis();
     uint8_t chsum;
     uint16_t val;
-    
-    if (now - _lastTempMeasurement > _measurementDelay) { // sample the sensor
+#ifdef SHT_DEBUG
+    Serial.println("measure humidity");
+#endif
+    if (now - _lastHumMeasurement > _measurementDelay) { // sample the sensor
 	_lastHumMeasurement = now;
 	if (!measure(&val, &chsum, HUMI)) {
 	    _hum = val;
+#ifdef SHT_DEBUG
+	    Serial.print("new value");
+	    Serial.println(val);
+#endif
 	    if (++_averageIndex >= _averageLength) {
 		_averageIndex = 0;
 	    }
 	    _humAverage[_averageIndex] = _hum;
 	}
+#ifdef SHT_DEBUG
+	else {
+	    Serial.println("sg wrong in the measure fnct");
+	}
+#endif
     }
+#ifdef SHT_DEBUG
+    else {
+	Serial.println("can't make new measurement this soon");
+    }
+#endif
 }
 
 uint8_t myardu::SHTxx::write(byte value) {

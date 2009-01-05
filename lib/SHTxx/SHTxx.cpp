@@ -59,9 +59,9 @@ float myardu::SHTxx::getHumAvg() {
 
 void myardu::SHTxx::reset(void) {
     uint8_t i;
-    #ifdef SHT_DEBUG
+#ifdef SHT_DEBUG
     Serial.println("reseting SHT");
-    #endif
+#endif
     digitalWrite(_dataPin, HIGH);
     digitalWrite(_sckPin, LOW);
     for (i = 0; i < 9; i++) {
@@ -75,9 +75,9 @@ void myardu::SHTxx::reset(void) {
 }
 
 void myardu::SHTxx::start(void) {
-    #ifdef SHT_DEBUG
+#ifdef SHT_DEBUG
     Serial.println("starting SHT");
-    #endif
+#endif
     // initial state
     digitalWrite(_dataPin, HIGH);
     digitalWrite(_sckPin, LOW);
@@ -93,21 +93,25 @@ void myardu::SHTxx::start(void) {
     digitalWrite(_dataPin, HIGH);
     asm("nop");
     digitalWrite(_sckPin, LOW);
-    #ifdef SHT_DEBUG
+#ifdef SHT_DEBUG
     Serial.println("start done");
-    #endif
+#endif
 }
 
 uint8_t myardu::SHTxx::measure(uint16_t *value, uint8_t* checksum, Sensor mode) {
     uint8_t error = 0;
     uint8_t i;
+    uint8_t tmp = 0;
     start();
+    _crc = 0;
     switch (mode) {
     case TEMP:
 	error |= write(MEASURE_TEMP);
+	_crc = CRCTable[MEASURE_TEMP ^ _crc];
 	break;
     case HUMI:
 	error |= write(MEASURE_HUMI);
+	_crc = CRCTable[MEASURE_HUMI ^ _crc];
 	break;
     }
     pinMode(_dataPin, INPUT);
@@ -123,10 +127,30 @@ uint8_t myardu::SHTxx::measure(uint16_t *value, uint8_t* checksum, Sensor mode) 
 	return error |= 2;
     }
 
-    *(value) = read(true) << 8;
-    *(value) |= read(true);
-
+    tmp = read(true);
+    *(value) = tmp << 8;
+    _crc = CRCTable[tmp ^ _crc];
+    tmp = read(true);
+    *(value) |= tmp;
+    _crc = CRCTable[tmp ^ _crc];
+    tmp = 0;
     *(checksum) = read(false);
+    for (i = 0; i < 8; i++) {
+	tmp = (tmp << 1) + (*(checksum)  & 1);
+	*(checksum)  >>= 1;
+    }
+    *(checksum) = tmp;
+    if (*(checksum) != _crc) {
+	error |= 0x4;
+    }
+#ifdef SHT_DEBUG
+    Serial.print("value: ");
+    Serial.println((uint16_t)*(value));
+    Serial.print("checksum: ");
+    Serial.println((uint16_t)*(checksum));
+    Serial.print("calculated: ");
+    Serial.println((uint16_t)_crc);
+#endif
     return error;
 }
 
@@ -159,8 +183,7 @@ void myardu::SHTxx::measureHum() {
 	if (!measure(&val, &chsum, HUMI)) {
 	    _hum = val;
 #ifdef SHT_DEBUG
-	    Serial.print("new value");
-	    Serial.println(val);
+	    Serial.println("new value!");
 #endif
 	    if (++_averageIndex >= _averageLength) {
 		_averageIndex = 0;

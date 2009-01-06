@@ -50,9 +50,12 @@ class PachuDaemon(Daemon):
                 print 'now updating'
                 self._pachube.update([Data(0, self._temp/self._tempnum, unit=Celsius()),
                                       Data(1, self._hum/self._humnum, unit=RH())])
-                self._pachube.put()
-                self._tempnum = self._humnum = self._temp =  self._hum = 0.0
-                self._lastput = datetime.now()
+                try:
+                    self._pachube.put()
+                    self._tempnum = self._humnum = self._temp =  self._hum = 0.0
+                    self._lastput = datetime.now()
+                except Exception, e:
+                    print 'Exception during put:', e
 
 ##
 # For reading command line agruments.

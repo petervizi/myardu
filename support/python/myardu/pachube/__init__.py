@@ -8,6 +8,8 @@
 from datetime import datetime, timedelta
 from optparse import OptionParser
 from serial import Serial
+from math import log
+from math import exp
 from myardu.daemon import Daemon
 from eeml import *
 
@@ -45,17 +47,37 @@ class PachuDaemon(Daemon):
             self._hum += float(values[1])
             self._tempnum += 1.0
             self._humnum += 1.0
-            print 'temp', self._temp/self._tempnum, 'hum', self._hum/self._humnum
+            print '.'
             if (datetime.now() - self._lastput) > self._updateinterval:
-                print 'now updating'
-                self._pachube.update([Data(0, self._temp/self._tempnum, unit=Celsius()),
-                                      Data(1, self._hum/self._humnum, unit=RH())])
+                temp = self._temp/self._tempnum
+                hum = self._hum/self._humnum
+                dp = self.getDP()
+                hi = self.getHI()
+                print datetime.now(), 'now updating', temp, hum, dp, 
+                self._pachube.update([Data(0, round(temp, 2), unit=Celsius()),
+                                      Data(1, round(hum, 2), unit=RH()),
+                                      Data(2, round(dp, 2), unit=Celsius()),
+                                      Data(3, round(hi, 2), unit=Celsius())])
                 try:
                     self._pachube.put()
                     self._tempnum = self._humnum = self._temp =  self._hum = 0.0
                     self._lastput = datetime.now()
                 except Exception, e:
                     print 'Exception during put:', e
+
+    def getDP(self):
+        temp = self._temp/self._tempnum
+        hum = self._hum/self._humnum
+        H = (log(hum, 10)-2.0)/0.4343 + (17.62*temp)/(243.12+temp)
+        Dp = 243.12*H/(17.62-H)
+        return Dp
+
+    def getHI(self):
+        t = self._temp/self._tempnum
+        r = self._hum/self._humnum
+        w = 0
+        e = r/100.0*6.105*exp(17.27*t/(237.7+t))
+        return t+0.33*e-0.70*w-4.0
 
 ##
 # For reading command line agruments.
